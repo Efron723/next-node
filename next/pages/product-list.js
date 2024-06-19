@@ -45,44 +45,42 @@ export default function ProductList() {
   };
 
   return (
-    <>
-      <DefaultLayout title="商品列表">
-        <Head>
-          <meta keyword="Efron" />
-        </Head>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>商品名稱</th>
-              <th>頁數</th>
-              <th>價格</th>
-              <th>加到購物車</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((v, i) => {
-              return (
-                <tr key={v.id}>
-                  <td>{v.id}</td>
-                  <td>{v.bookname}</td>
-                  <td>{v.pages}</td>
-                  <td>{v.price}</td>
-                  <td>
-                    <button
-                      className="btn btn-success"
-                      // 傳點到的 id 給 addToCart
-                      onClick={() => addToCart(v.id)}
-                    >
-                      BUY
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </DefaultLayout>
-    </>
+    <DefaultLayout title="商品列表">
+      <Head>
+        <meta keyword="Efron" />
+      </Head>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>商品名稱</th>
+            <th>頁數</th>
+            <th>價格</th>
+            <th>加到購物車</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((v, i) => {
+            return (
+              <tr key={v.id}>
+                <td>{v.id}</td>
+                <td>{v.bookname}</td>
+                <td>{v.pages}</td>
+                <td>{v.price}</td>
+                <td>
+                  <button
+                    className="btn btn-success"
+                    // 傳點到的 id 給 addToCart
+                    onClick={() => addToCart(v.id)}
+                  >
+                    BUY
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </DefaultLayout>
   );
 }

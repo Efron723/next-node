@@ -42,7 +42,7 @@ export default function Navbar() {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" href="#">
+                  <Link className="nav-link" href="/cart">
                     <button
                       type="button"
                       class="btn btn-primary position-relative"
