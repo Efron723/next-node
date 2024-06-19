@@ -21,17 +21,21 @@ export default function ProductList() {
     let cartData = [];
 
     try {
-
       // 將 oriData 轉為 js 數值或物件
       cartData = JSON.parse(oriData);
 
       // 如果不是陣列
       if (!Array.isArray(cartData)) {
-
         // 則為空陣列
         cartData = [];
       }
     } catch (e) {}
+
+    // 購物車裡有沒有這個商品
+    const cartItem = cartData.find((v) => v.id === pid);
+
+    // 購物車裡已經有這個商品就不執行
+    if (cartItem) return;
 
     // 往後新增一筆 onClick 傳入的值
     cartData.push({ ...item, quantity: 1 });
