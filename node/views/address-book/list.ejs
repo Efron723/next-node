@@ -1,0 +1,111 @@
+<%# 這邊要用 ../ 返回上一層才找的到 parts
+因為現在在 address-book 資料夾底下 %>
+<%- include ("../parts/html-head")%>
+<%- include ("../parts/navbar")%>
+<div class="container">
+  <div class="row">
+    <div class="col-6">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+
+          <%# 這邊 for 迴圈省略大括號直接接 if  %>
+          <%# pagination  %>
+          <%# 將 req.query 展開複製，同時添加 page : i 屬性，假設 i = 3 
+          qs2 將是 { keyword: 'test', birth_begin: '2022-01-01', page: 3 }
+          %>
+          <% for(let i=page-5; i<=page+5; i++) if(i>=1 && i<=totalPages) { 
+          const qs2 = {...qs, page: i};
+          %>
+
+          <%# 當前頁面就 + active，不是當前頁面就 ""  %>
+          <li class="page-item <%= i===page ? 'active' : '' %>">
+
+            <%# 跳轉篩選後的頁面也能保留篩選的結果，
+            URLSearchParams 用來構建 URL 查詢字串
+            例如，{ keyword: 'test', page: 3 } 會轉換為 keyword=test&page=3，
+            toString() 再轉為字串 "keyword=test&page=3"，
+            記得前面的 ? 不能刪掉，因為只是創建 queryString 沒有問號  
+            %>
+            <a class="page-link" href="?<%= new URLSearchParams(qs2).toString() %>"><%= i %></a>
+          </li>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
+
+    <%# 右半邊新增搜尋框，送出後會在 URL 得到 queryString %>
+    <div class="col-6">
+      <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" name="keyword"
+          <%# 將篩選過後的 keyword 也會顯示在搜尋框 %> value="<%= qs.keyword ? qs.keyword : '' %>" />
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <%# 新增刪除 icon %>
+            <th scope="col"><i class="fa-solid fa-trash"></i></th>
+            <th scope="col">編號</th>
+            <th scope="col">姓名</th>
+            <th scope="col">Email</th>
+            <th scope="col">手機</th>
+            <th scope="col">生日</th>
+            <th scope="col">地址</th>
+            <%# 新增編輯 icon %>
+            <th scope="col"><i class="fa-solid fa-file-pen"></i></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%# 動態 table 資料  %>
+          <%# 新增刪除icon、編輯 icon %>
+          <%# javascript: deleteOne() 這是一個假連結，刪除你所選的 id 的資料 %>
+          <%# 跳轉編輯的頁面，並帶入要編輯的資料 %>
+          <% for(let r of rows){ %>
+          <tr>
+            <td>
+              <a href="javascript: deleteOne(<%= r['sid'] %>)">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </td>
+            <td><%= r['sid'] %></td>
+            <td><%= r.name %></td>
+            <td><%= r.email %></td>
+            <td><%= r.mobile %></td>
+            <td><%= r.birthday %></td>
+            <td><%= r.address %></td>
+            <td>
+              <a href="/address-book/edit/<%= r.sid %>"><i class="fa-solid fa-file-pen"></i></a>
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include ("../parts/scripts")%>
+
+<%# 以下是刪除資料的 script %>
+<script>
+  const deleteOne = (sid) => {
+    if (confirm(`是否要刪除編號為 ${sid} 的資料?`)) {
+      fetch(`/address-book/api/${sid}`, {
+          method: "DELETE",
+        })
+        .then((r) => r.json())
+        .then((result) => {
+          // 這邊會將所刪除的 console.log 出來，以 json 形式
+          console.log(JSON.stringify(result));
+          if (result.success) {
+            location.reload();
+          }
+        });
+    }
+  };
+</script>
+
+<%- include ("../parts/html-foot")%>

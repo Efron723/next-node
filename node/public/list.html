@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="info"></div>
+
+  <script>
+    let myData;
+    const renderTable = () => {
+      // 如果你要回傳以下的值，反引號要放在 return 後面才會輸出結果
+      // 如果你放到下一行雖然語法沒錯但是 return 後就不會往下執行了
+      return `
+          <table>
+            <thead>
+            <tr>
+              <td>編號</td>
+              <td>姓名</td>
+              <td>手機</td>
+            </tr>
+            </thead>
+            <tbody>
+              ${
+                myData.rows.map(el=>{
+                  return `
+                  <tr>
+                    <td>${el.sid}</td>
+                    <td>${el.name}</td>
+                    <td>${el.mobile}</td>
+                  </tr> 
+                  `;
+                }).join('')
+              }
+            </tbody>
+            </table>
+        `
+    }
+
+    fetch("//localhost:3001/address-book/api")
+      .then((r) => r.json())
+      .then((data) => {
+        myData = data;
+
+        info.innerHTML = renderTable();
+      });
+  </script>
+</body>
+
+</html>
