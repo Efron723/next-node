@@ -2,7 +2,13 @@ import Link from "next/link";
 import React from "react";
 import { BsCart3 } from "react-icons/bs";
 
-export default function Navbar() {
+const navLinkStyle = {
+  borderRadius: "6px",
+  backgroundColor: "tomato",
+  color: "white",
+  fontWeight: "900",
+};
+export default function Navbar({ pageName = "" }) {
   return (
     <>
       <div className="container">
@@ -29,30 +35,29 @@ export default function Navbar() {
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
                   <Link
-                    className="nav-link active"
-                    aria-current="page"
+                    className="nav-link"
+                    style={pageName === "product-list" ? navLinkStyle : null}
                     href="/product-list"
                   >
                     商品列表
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" href="/ab-list">
+                  <Link
+                    className="nav-link"
+                    style={pageName === "ab-list" ? navLinkStyle : null}
+                    href="/ab-list"
+                  >
                     通訊錄列表
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" href="/cart">
-                    <button
-                      type="button"
-                      className="btn btn-primary position-relative"
-                    >
-                      <BsCart3 />
-                      <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        99+
-                        <span className="visually-hidden">unread messages</span>
-                      </span>
-                    </button>
+                  <Link
+                    className="nav-link"
+                    style={pageName === "cart" ? navLinkStyle : null}
+                    href="/cart"
+                  >
+                    購物車 <span class="badge text-bg-success">3</span>
                   </Link>
                 </li>
               </ul>

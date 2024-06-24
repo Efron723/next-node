@@ -3,17 +3,15 @@ import Head from "next/head";
 import Navbar from "./navbar";
 import Footer from "./footer";
 
-export default function DefaultLayout({ title = "Efron", children }) {
+export default function DefaultLayout({ children, title = "", pageName = "" }) {
   return (
     <>
       <Head>
-        <title>{title}</title>
+        <title>{title ? "Efron | " + title : "Efron"}</title>
       </Head>
-      <Navbar />
-      <div className="container">
-        {children}
-        <Footer />
-      </div>
+      <Navbar {...{ pageName }} />
+      <div className="container">{children}</div>
+      <Footer />
     </>
   );
 }

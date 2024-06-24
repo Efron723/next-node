@@ -47,7 +47,7 @@ export default function Cart() {
   }, []);
 
   return (
-    <DefaultLayout title="購物車">
+    <DefaultLayout title="購物車" pageName="cart">
       <h2>購物車</h2>
       <table class="table table-bordered table-striped">
         <thead>

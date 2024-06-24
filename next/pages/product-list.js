@@ -45,7 +45,7 @@ export default function ProductList() {
   };
 
   return (
-    <DefaultLayout title="商品列表">
+    <DefaultLayout title="商品列表" pageName="product-list">
       <Head>
         <meta keyword="Efron" />
       </Head>
