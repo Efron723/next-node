@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 import express from "express";
 
 import multer from "multer";
@@ -33,14 +35,13 @@ app.use(express.json());
 const corsOptions = {
   credentials: true,
   origin: (origin, cb) => {
-    // console.log({ origin });
-    cb(null, true); // 全部都允許
+    console.log({ origin });
+    cb(null, true);
   },
 };
 
 app.use(cors(corsOptions));
 
-//
 const MysqlStore = mysql_session(session);
 const sessionStore = new MysqlStore({}, db);
 
@@ -49,8 +50,6 @@ app.use(
     saveUninitialized: false,
     resave: false,
     secret: "dkfgdlkg8496749KHJKHLd",
-
-    //
     store: sessionStore,
     /*
     cookie: {
@@ -195,7 +194,7 @@ app.get("/yahoo", async (req, res) => {
   res.send(txt);
 });
 
-// 渲染登入的頁面 get
+// 渲染登入的頁面 get，URL : /login
 app.get("/login", async (req, res) => {
   res.render("login");
 });
@@ -219,6 +218,7 @@ app.post("/login", upload.none(), async (req, res) => {
     return res.json(output);
   }
 
+  // 使用 bcrypt 比較輸入的密碼和數據庫中的密碼 hash 
   const result = await bcrypt.compare(req.body.password, rows[0].password);
   if (!result) {
     // 密碼是錯的狀態碼
@@ -229,7 +229,7 @@ app.post("/login", upload.none(), async (req, res) => {
   // 登入成功返回 true
   output.success = true;
 
-  // 把狀態記錄在 session 裡
+  // 把用戶的ID、電子郵件和暱稱記錄在 session 裡
   req.session.admin = {
     id: rows[0].id,
     email: rows[0].email,
@@ -239,18 +239,21 @@ app.post("/login", upload.none(), async (req, res) => {
   res.json(output);
 });
 
-// 渲染登出頁面
+// 登出
 app.get("/logout", (req, res) => {
-  // 刪除 session 裡 admin 資料
+
+  // 刪除會話中的 admin 對象
   delete req.session.admin;
-  // 跳轉到首頁
+
+  // 將用戶重定向到網站的首頁
   res.redirect("/");
 });
 
+// JWT
 app.get("/jwt1", (req, res) => {
   const data = {
     id: 17,
-    account: "Ming",
+    account: "shin",
   };
 
   const token = jwt.sign(data, process.env.JWT_KEY);
