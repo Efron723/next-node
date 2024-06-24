@@ -45,12 +45,12 @@ export default function Navbar() {
                   <Link className="nav-link" href="/cart">
                     <button
                       type="button"
-                      class="btn btn-primary position-relative"
+                      className="btn btn-primary position-relative"
                     >
                       <BsCart3 />
-                      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                      <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         99+
-                        <span class="visually-hidden">unread messages</span>
+                        <span className="visually-hidden">unread messages</span>
                       </span>
                     </button>
                   </Link>
