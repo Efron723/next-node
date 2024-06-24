@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DefaultLayout from "@/components/layouts/default-layout";
+import { AB_LIST } from "@/config/api-path";
 
 export default function AbList() {
   const [data, setData] = useState({
@@ -7,7 +8,7 @@ export default function AbList() {
   });
 
   useEffect(() => {
-    fetch("http://127.0.0.1:3001/address-book/api")
+    fetch(`${AB_LIST}?page=2`)
       .then((r) => r.json())
       .then((data) => {
         setData(data);
