@@ -142,6 +142,14 @@ const getListData = async (req) => {
   };
 };
 
+// 模擬網路延遲的狀況 middleware
+router.use((req, res, next) => {
+  const ms = 100 + Math.floor(Math.random() * 2000);
+  setTimeout(() => {
+    next();
+  }, ms);
+});
+
 // 設定頂層 middleware
 router.use((req, res, next) => {
   let u = req.url.split("?")[0];

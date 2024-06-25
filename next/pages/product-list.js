@@ -49,7 +49,8 @@ export default function ProductList() {
       <Head>
         <meta keyword="Efron" />
       </Head>
-      <table class="table">
+      <h2>商品列表</h2>
+      <table className="table">
         <thead>
           <tr>
             <th>#</th>

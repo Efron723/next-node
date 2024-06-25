@@ -33,6 +33,24 @@ export default function Navbar({ pageName = "" }) {
               id="navbarSupportedContent"
             >
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                  <Link
+                    className="nav-link"
+                    style={pageName === "ab-list" ? navLinkStyle : null}
+                    href="/ab-list"
+                  >
+                    通訊錄列表
+                  </Link>
+                </li>
+              <li className="nav-item">
+                  <Link
+                    className="nav-link"
+                    style={pageName === "ab-add" ? navLinkStyle : null}
+                    href="/ab-add"
+                  >
+                    新增通訊錄
+                  </Link>
+                </li>
                 <li className="nav-item">
                   <Link
                     className="nav-link"
@@ -45,19 +63,10 @@ export default function Navbar({ pageName = "" }) {
                 <li className="nav-item">
                   <Link
                     className="nav-link"
-                    style={pageName === "ab-list" ? navLinkStyle : null}
-                    href="/ab-list"
-                  >
-                    通訊錄列表
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link
-                    className="nav-link"
                     style={pageName === "cart" ? navLinkStyle : null}
                     href="/cart"
                   >
-                    購物車 <span class="badge text-bg-success">3</span>
+                    購物車 <span className="badge text-bg-success">3</span>
                   </Link>
                 </li>
               </ul>
