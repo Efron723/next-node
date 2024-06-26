@@ -14,5 +14,5 @@ const hash2 = "$2b$12$5Ao8OA.b0.o6ENkRcBu9c.TE7GRnsjlAIg96JWfx0NA6uoAGWsFNa";
 
 // 比對兩者是否相同
 // 雖然每次加鹽過的密碼都不一樣，但是都跟原密碼相同
-const result = await bcrypt.compare("13579", hash2);
+const result = await bcrypt.compare("13579_", hash2);
 console.log({ result });
