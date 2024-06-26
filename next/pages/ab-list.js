@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { AB_LIST } from "@/config/api-path";
+import { AB_ITEM_DELETE } from "@/config/api-path";
 import Link from "next/link";
 import DefaultLayout from "@/components/layouts/default-layout";
+import { FaRegTrashCan, FaRegPenToSquare } from "react-icons/fa6";
 
 export default function AbList() {
   // 當用戶點連結 url 變動或 router.push 就會觸發 useRouter，
@@ -18,6 +20,26 @@ export default function AbList() {
   const [data, setData] = useState({
     rows: [],
   });
+
+  // 刪除資料
+  const removeOne = async (sid) => {
+    console.log({ sid });
+
+    try {
+      const r = await fetch(`${AB_ITEM_DELETE}/${sid}`, {
+        // 方法 : DELETE
+        method: "DELETE",
+      });
+
+      const result = await r.json();
+      console.log(result);
+      if (result.success) {
+        // 留在原本的頁面, 但是要觸發 router 狀態變更, 讓整個頁面更新
+        // 加上這個參數 { scroll: false }，在頁面最下方刪除 rerender 時頁面不會跑到最上方
+        router.push(location.search, undefined, { scroll: false });
+      }
+    } catch (ex) {}
+  };
 
   useEffect(() => {
     // 如果開始抓資料時開始載入動畫，true
@@ -100,20 +122,42 @@ export default function AbList() {
             <table className="table table-bordered table-striped">
               <thead>
                 <tr>
+                  <th>
+                    <FaRegTrashCan />
+                  </th>
                   <th>#</th>
                   <th>姓名</th>
                   <th>電郵</th>
                   <th>手機</th>
+                  <th>
+                    <FaRegPenToSquare />
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {data.rows.map((r, i) => {
                   return (
                     <tr key={r.sid}>
+                      <td>
+                        <a
+                          href="#/"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            removeOne(r.sid);
+                          }}
+                        >
+                          <FaRegTrashCan />
+                        </a>
+                      </td>
                       <td>{r.sid}</td>
                       <td>{r.name}</td>
                       <td>{r.email}</td>
                       <td>{r.mobile}</td>
+                      <td>
+                        <Link href={`/ab-edit/${r.sid}`}>
+                          <FaRegPenToSquare />
+                        </Link>
+                      </td>
                     </tr>
                   );
                 })}

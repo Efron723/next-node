@@ -143,29 +143,29 @@ const getListData = async (req) => {
 };
 
 // 模擬網路延遲的狀況 middleware
-router.use((req, res, next) => {
-  const ms = 100 + Math.floor(Math.random() * 2000);
-  setTimeout(() => {
-    next();
-  }, ms);
-});
+// router.use((req, res, next) => {
+//   const ms = 100 + Math.floor(Math.random() * 2000);
+//   setTimeout(() => {
+//     next();
+//   }, ms);
+// });
 
-// 設定頂層 middleware
-router.use((req, res, next) => {
-  let u = req.url.split("?")[0];
-  // 下面通訊錄列表的 url 去掉之後是 /，但是新增列表的 url 去掉之後是 /add
-  // 所以如果你的 url 是 / 才能通過，沒登入就可以看到列表，但是不能看到新增頁面
-  if (["/", "/api"]) {
-    return next();
-  }
-  if (req.session.admin) {
-    // 有登入, 就通過
-    next();
-  } else {
-    // 沒有登入, 就跳到登入頁
-    res.redirect("/login");
-  }
-});
+// // 設定頂層 middleware
+// router.use((req, res, next) => {
+//   let u = req.url.split("?")[0];
+//   // 下面通訊錄列表的 url 去掉之後是 /，但是新增列表的 url 去掉之後是 /add
+//   // 所以如果你的 url 是 / 才能通過，沒登入就可以看到列表，但是不能看到新增頁面
+//   if (["/", "/api"]) {
+//     return next();
+//   }
+//   if (req.session.admin) {
+//     // 有登入, 就通過
+//     next();
+//   } else {
+//     // 沒有登入, 就跳到登入頁
+//     res.redirect("/login");
+//   }
+// });
 
 // 用戶訪問根路徑（即 /）時，會執行這個非同步函數
 // 當用戶請求資料時，能夠正確處理頁數錯誤並返回對應的 HTML 頁面
@@ -329,6 +329,26 @@ router.get("/edit/:sid", async (req, res) => {
   res.render("address-book/edit", rows[0]);
 });
 
+// 取得單項資料的 API
+router.get("/api/:sid", async (req, res) => {
+  const sid = +req.params.sid || 0;
+  if (!sid) {
+    return res.json({ success: false, error: "沒有編號" });
+  }
+
+  const sql = `SELECT * FROM address_book WHERE sid=${sid}`;
+  const [rows] = await db.query(sql);
+  if (!rows.length) {
+    // 沒有該筆資料
+    return res.json({ success: false, error: "沒有該筆資料" });
+  }
+
+  const m = moment(rows[0].birthday);
+  rows[0].birthday = m.isValid() ? m.format(dateFormat) : "";
+
+  res.json({ success: true, data: rows[0] });
+});
+
 // 處理編輯的表單
 // 用 PUT 方法接收，因為後端送出格式是
 router.put("/api/:sid", upload.none(), async (req, res) => {
@@ -346,6 +366,11 @@ router.put("/api/:sid", upload.none(), async (req, res) => {
     return res.json(output);
   }
 
+  //
+  let body = { ...req.body };
+  const m = moment(body.birthday);
+  body.birthday = m.isValid() ? m.format(dateFormat) : null;
+
   // try catch 處理錯誤，更新指定 sid 的資料
   try {
     const sql = "UPDATE `address_book` SET ? WHERE sid=? ";
@@ -353,7 +378,7 @@ router.put("/api/:sid", upload.none(), async (req, res) => {
     // 使用 await 等待查詢的結果並存儲在 output.result
     // db.query 方法執行 SQL 語句，並且 req.body 包含了要更新的數據
     // sid 是要更新的記錄標誌
-    const [result] = await db.query(sql, [req.body, sid]);
+    const [result] = await db.query(sql, [body, sid]);
     output.result = result;
     // affectedRows 受影響的行數、changedRows 有更改的行數
     // 必需都為 1，並且轉換布林值，帶入給 success 代表編輯成功

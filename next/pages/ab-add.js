@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { AB_LIST } from "@/config/api-path";
-import Link from "next/link";
+import { useState } from "react";
+// 引入後端
+import { AB_ADD_POST } from "@/config/api-path";
 import DefaultLayout from "@/components/layouts/default-layout";
-import { loadGetInitialProps } from "next/dist/shared/lib/utils";
+import { z } from "zod";
+import { useRouter } from "next/router";
 
-export default function AbAdd() {
+export default function AbEdit() {
+  const router = useRouter();
+
   const [myForm, setMyForm] = useState({
     // 初始化
     name: "",
@@ -13,6 +15,13 @@ export default function AbAdd() {
     mobile: "",
     birthday: "",
     address: "",
+  });
+
+  // 初始化 myFormErrors
+  const [myFormErrors, setMyFormErrors] = useState({
+    name: "",
+    email: "",
+    mobile: "",
   });
 
   // defaultValue={} 不可控表單
@@ -28,12 +37,94 @@ export default function AbAdd() {
   const onChange = (e) => {
     console.log(e.target.name, e.target.value);
 
+    // 做表單的驗證
+    // 驗證 string 類型的 email，message 寫格式不正確提示訊息
+
+    // const schemaEmail = z.string().email({ message: "請填寫正確的電郵格式" });
+
+    // 如果 name === email 就驗證
+
+    // if (e.target.name === "email") {
+    //   const result = schemaEmail.safeParse(e.target.value);
+    //   console.log(JSON.stringify(result, null, 4));
+    // }
+
+    /*
+    {
+    "success": false,
+    "error": {
+        "issues": [
+            {
+                "validation": "regex",
+                "code": "invalid_string",
+                "message": "請填寫正確的手機格式",
+                "path": [
+                    "mobile"
+                ]
+            }
+        ],
+        "name": "ZodError"
+    }
+}
+    */
+
+    // 多欄驗證
+    const schemaForm = z.object({
+      name: z.string().min(2, { message: "姓名至少兩個字" }),
+      email: z.string().email({ message: "請填寫正確的電郵格式" }),
+      mobile: z
+        .string()
+        .regex(/09\d{2}-?\d{3}-?\d{3}/, { message: "請填寫正確的手機格式" }),
+    });
+
     // myForm 對象中的所有屬性展開到新對象 newForm 中
     // [e.target.name] 會自動抓取當前 input 元素的 name 屬性，
     // 也就是說 e.target.value 會動態設置給 e.target.name
+
     const newForm = { ...myForm, [e.target.name]: e.target.value };
+
+    // safeParse 方法會驗證 newForm 是否符合 schemaForm 定義的結構
+    const result2 = schemaForm.safeParse(newForm);
+    console.log(JSON.stringify(result2, null, 4));
+
+    // 重置 myFormErrors
+    const newFormErrors = {
+      name: "",
+      email: "",
+      mobile: "",
+    };
+
+    if (!result2.success && result2?.error?.issues?.length) {
+      for (let issue of result2.error.issues) {
+        newFormErrors[issue.path[0]] = issue.message;
+      }
+    }
+    setMyFormErrors(newFormErrors);
     console.log(newForm);
     setMyForm(newForm);
+  };
+
+  // 新增資料進資料庫
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    // 如果表單驗證有通過的話
+    try {
+      const r = await fetch(AB_ADD_POST, {
+        method: "POST",
+        body: JSON.stringify(myForm),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const result = await r.json();
+      console.log(result);
+      if (result.success) {
+        router.push(`/ab-list`); // 成功送出就跳頁
+      } else {
+      }
+    } catch (ex) {
+      console.log(ex);
+    }
   };
 
   return (
@@ -43,7 +134,7 @@ export default function AbAdd() {
           <div className="card">
             <div className="card-body">
               <h5 className="card-title">新增資料</h5>
-              <form name="form1">
+              <form name="form1" onSubmit={onSubmit}>
                 <div className="mb-3">
                   <label htmlFor="name" className="form-label">
                     姓名
@@ -60,7 +151,8 @@ export default function AbAdd() {
                     // onChange 事件處理函數會即時更新狀態
                     onChange={onChange}
                   />
-                  <div className="form-text"></div>
+                  {/* 輸入正確後重置 myFormErrors */}
+                  <div className="form-text">{myFormErrors.name}</div>
                 </div>
 
                 <div className="mb-3">
@@ -75,7 +167,7 @@ export default function AbAdd() {
                     value={myForm.email}
                     onChange={onChange}
                   />
-                  <div className="form-text"></div>
+                  <div className="form-text">{myFormErrors.email}</div>
                 </div>
 
                 <div className="mb-3">
@@ -90,7 +182,7 @@ export default function AbAdd() {
                     value={myForm.mobile}
                     onChange={onChange}
                   />
-                  <div className="form-text"></div>
+                  <div className="form-text">{myFormErrors.mobile}</div>
                 </div>
 
                 <div className="mb-3">
