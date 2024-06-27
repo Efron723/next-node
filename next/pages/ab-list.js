@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { useAuth } from "@/contexts/auth-context";
 import { AB_LIST } from "@/config/api-path";
 import { AB_ITEM_DELETE } from "@/config/api-path";
 import Link from "next/link";
@@ -21,14 +22,24 @@ export default function AbList() {
     rows: [],
   });
 
+  const { auth, getAuthHeader } = useAuth();
+
   // 刪除資料
   const removeOne = async (sid) => {
     console.log({ sid });
+
+    // 如果沒登入不能刪除跳出通知
+    if (!auth.id) {
+      alert("請登入");
+    }
 
     try {
       const r = await fetch(`${AB_ITEM_DELETE}/${sid}`, {
         // 方法 : DELETE
         method: "DELETE",
+        headers: {
+          ...getAuthHeader(),
+        },
       });
 
       const result = await r.json();

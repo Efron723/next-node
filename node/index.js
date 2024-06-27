@@ -229,7 +229,7 @@ app.post("/login", upload.none(), async (req, res) => {
     return res.json(output);
   }
 
-  // 使用 bcrypt 比較輸入的密碼和數據庫中的密碼 hash 
+  // 使用 bcrypt 比較輸入的密碼和數據庫中的密碼 hash
   const result = await bcrypt.compare(req.body.password, rows[0].password);
   if (!result) {
     // 密碼是錯的狀態碼
@@ -252,7 +252,6 @@ app.post("/login", upload.none(), async (req, res) => {
 
 // 登出
 app.get("/logout", (req, res) => {
-
   // 刪除會話中的 admin 對象
   delete req.session.admin;
 
@@ -304,6 +303,7 @@ app.post("/login-jwt", async (req, res) => {
     email: rows[0].email,
     nickname: rows[0].nickname,
     token,
+    // role: "admin"
   };
 
   res.json(output);

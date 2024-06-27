@@ -101,7 +101,7 @@ export default function AbAdd() {
   }, [router]);
 
   return (
-    <DefaultLayout title="新增通訊錄" pageName="ab-add">
+    <DefaultLayout title="編輯通訊錄">
       <div className="row">
         <div className="col-6">
           {!!myForm.sid && (

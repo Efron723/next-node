@@ -283,10 +283,20 @@ router.delete("/api/:sid", async (req, res) => {
     code: 0,
     result: {},
   };
+
+  // 如果 req 或 req.my_jwt 是 undefined 或 null，
+  // 則 req.my_jwt.id 會引發錯誤，而 req.my_jwt?.id 只會返回 undefined
+  if (!req.my_jwt?.id) {
+    // 沒有登入
+    output.code = 470;
+    return res.json(output);
+  }
+
   // 從請求參數中取得 sid，並轉換為數字，如果是 NAN 則為 0
   const sid = +req.params.sid || 0;
   // 如果 sid 為無效值 0，則返回初始值
   if (!sid) {
+    output.code = 480;
     return res.json(output);
   }
 
